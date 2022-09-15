@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simple Flask Application with an Oracle XE backend</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <div class="container px-4" id="app">
+
+        <!-- Header -->
+        <div class="row gx-5 no-border">
+          <div class="col p-3">
+            <h1>Flask powered by Oracle Database</h1>
+    
+            <p>
+                This little application counts how many times this particular page was loaded.
+            </p>
+          </div>
+        </div>
+    
+    
+        <!-- Form -->
+        <div class="row gx-2 no-border">
+            <div class="col p-3 border">
+                <form>
+                    <div class="mb-3">
+                    <label class="form-label">Number of times this page has been loaded:</label>
+                    <input type="text" class="form-control" id="hits" aria-describedby="number of page hits" value="{{ hits }}">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-danger">Increase hit count</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
