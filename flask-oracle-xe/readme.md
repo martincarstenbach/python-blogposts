@@ -1,8 +1,10 @@
-# Flask Oracle XE 21c Demo
+# Flask, Python-OracleDB, and Oracle XE 21c Web Application Demo
 
-A simple Python [Flask](https://flask.palletsprojects.com/en/2.2.x/) application using an Oracle XE 21c database as its backend for data storage. Both the "frontend" and "backend" run in containers. The application is deliberately kept simple, and implemented similar to existing tutorials about software development using containers. The application count page visits per visitor using cookies to identify individual sessions.
+A simple Python [Flask](https://flask.palletsprojects.com/en/2.2.x/) application using an [Oracle XE 21c](https://www.oracle.com/database/technologies/xe-downloads.html) database as its backend for data storage. Rather than using the older cx_oracle database driver this application uses the new [Python OracleDB driver](https://oracle.github.io/python-oracledb/). 
 
-> This is not production-ready code, it merely serves as an example how to develop with Oracle database
+Both the "frontend" and "backend" run in containers. The application is deliberately kept simple, and implemented in a similar fashion as existing tutorials about software development using containers: all it does is count page views per visitor using cookies to identify individual sessions.
+
+> This is not production-ready code, it merely serves as an example how to develop with Oracle database and Python(-oracledb).
 
 # Building
 
@@ -19,7 +21,7 @@ Podman has been used for creating and testing the container images. Docker shoul
 The following entities must be in place before the application can be tested:
 
 - Secrets
-    * `oracle-system-password`: a secret to store the Oracle XE 21c database's `system`and `sys` passwords
+    * `oracle-system-password`: a secret to store the Oracle XE 21c database's `system` and `sys` passwords
     * `flask-user-password`: the password for the application user
 - Volume
     * `oradata-vol` must be created to persistently store the database on disk
@@ -28,7 +30,7 @@ The following entities must be in place before the application can be tested:
 
 The XE database container image can be instructed to create an `APP_USER`. For simplicity this `APP_USER` account will be used by the Flask application. Update the `podman run` command below to change the username from `flaskdemo` to something of your liking. The user's password is be stored as the aforementioned `flask-user-password` secret.
 
-Please refer to [this article](https://www.redhat.com/sysadmin/new-podman-secrets-command) for more details about Podman Secrets and how to create them. 
+Please refer to [this article](https://www.redhat.com/sysadmin/new-podman-secrets-command) for more details about Podman Secrets and how to create them. Before continuing, please ensure the entities listed above have been created. 
 
 ## Database 
 
@@ -55,11 +57,10 @@ Use `podman ps` or `podman container ls` to check the database is up and running
 With the database up and running you can start the Flask application next. If not yet built, create the container image
 
 ```bash
-cd pydemo
 podman build -t pydemo:1.0 .
 ```
 
-Now that the container has been built it can be started:
+Now that the container has been built it can be started. Just like the database container it's started _rootless_
 
 ```bash
 podman run --detach \
@@ -73,3 +74,7 @@ localhost/pydemo:1.0
 ```
 
 Once the application start completed, point your browser to [http://localhost:8080](http://localhost:8080). [Waitress](https://flask.palletsprojects.com/en/2.2.x/deploying/waitress/) serves the application from the container image.
+
+# Additional Steps
+
+As per the introduction the application has been kept simple to focus on the main topic: creating and running a web application in containers, connecting to an Oracle XE 21c instance. Improvements to this code should include introduction of TLS security and automated build of the (application) container image.
