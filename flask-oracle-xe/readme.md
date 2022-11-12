@@ -4,7 +4,7 @@ A simple Python [Flask](https://flask.palletsprojects.com/en/2.2.x/) application
 
 Both the "frontend" and "backend" run in containers. The application is deliberately kept simple, and implemented in a similar fashion as existing tutorials about software development using containers: all it does is count page views per visitor using cookies to identify individual sessions.
 
-> This is not production-ready code, it merely serves as an example how to develop with Oracle database and Python(-oracledb).
+> This is not production-ready code, it merely serves as an example how to develop with Oracle database and Python(-oracledb). In particular no attention was spent on security to keep the example simple. 
 
 # Building
 
@@ -26,11 +26,11 @@ The following entities must be in place before the application can be tested:
 - Volume
     * `oradata-vol` must be created to persistently store the database on disk
 - Network
-    * `oracle-net` is used to link the database container to the application container
+    * `oracle-net` is used to link the database container to the application container. Must have DNS enabled (`podman network inspect oracle-net | jq '.[0].dns_enabled'` must return `true`)
 
 The XE database container image can be instructed to create an `APP_USER`. For simplicity this `APP_USER` account will be used by the Flask application. Update the `podman run` command below to change the username from `flaskdemo` to something of your liking. The user's password is be stored as the aforementioned `flask-user-password` secret.
 
-Please refer to [this article](https://www.redhat.com/sysadmin/new-podman-secrets-command) for more details about Podman Secrets and how to create them. Before continuing, please ensure the entities listed above have been created. 
+Please refer to [this RedHat article](https://www.redhat.com/sysadmin/new-podman-secrets-command) for more details about Podman Secrets and how to create them. Before continuing, please ensure the entities listed above have been created. 
 
 ## Database 
 
@@ -38,7 +38,8 @@ Note that the Oracle XE 21c container in the following code-snippet is started _
 
 ```
 podman run --detach \
---secret oracle-system-password --env ORACLE_PASSWORD_FILE=/run/secrets/oracle-system-password \
+--secret oracle-system-password \
+--env ORACLE_PASSWORD_FILE=/run/secrets/oracle-system-password \
 --env APP_USER=flaskdemo \
 --secret flask-user-password,type=env,target=APP_USER_PASSWORD \
 --volume oradata-vol:/opt/oracle/oradata \
