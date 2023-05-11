@@ -21,7 +21,7 @@ Podman has been used for creating and testing the container images. Docker shoul
 The following entities must be in place before the application can be tested:
 
 - Secrets
-    * `oracle-system-password`: a secret to store the Oracle XE 21c database's `system` and `sys` passwords
+    * `oracle-system-password`: a secret to store the Oracle database's `system` and `sys` passwords
     * `flask-user-password`: the password for the application user
 - Volume
     * `oradata-vol` must be created to persistently store the database on disk
@@ -77,4 +77,4 @@ Once the application start completed, point your browser to [http://localhost:80
 
 # Additional Steps
 
-As per the introduction the application has been kept simple to focus on the main topic: creating and running a web application in containers, connecting to an Oracle XE 21c instance. Improvements to this code should include introduction of TLS security and automated build of the (application) container image.
+As per the introduction the application has been kept simple to focus on the main topic: creating and running a web application in containers, connecting to an Oracle instance. Improvements to this code should include introduction of TLS security and automated build of the (application) container image.
