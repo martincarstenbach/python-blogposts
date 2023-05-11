@@ -1,6 +1,6 @@
 # Flask, Python-OracleDB, and Oracle Database 23c Free-Developer Release Web Application Demo
 
-A simple Python [Flask](https://flask.palletsprojects.com/en/2.3.x/) application using an [Oracle Database 23c Free-Developer Release](https://www.oracle.com/database/technologies/xe-downloads.html) database as its backend for data storage. Rather than using the older `cx_oracle` database driver this application uses the new [Python OracleDB driver](https://oracle.github.io/python-oracledb/). 
+A simple Python [Flask](https://flask.palletsprojects.com/en/2.3.x/) application using an [Oracle Database 23c Free-Developer Release](https://blogs.oracle.com/developers/post/oracle-database-23c-free-developer-release) database as its backend for data storage. Rather than using the older `cx_oracle` database driver this application uses the new [Python OracleDB driver](https://oracle.github.io/python-oracledb/). 
 
 Both the "frontend" and "backend" run in containers. The application is deliberately kept simple, and implemented in a similar fashion as existing tutorials about software development using containers: all it does is count page views per visitor using cookies to identify individual sessions.
 
