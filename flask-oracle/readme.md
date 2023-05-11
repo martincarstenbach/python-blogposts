@@ -1,20 +1,20 @@
 # Flask, Python-OracleDB, and Oracle XE 21c Web Application Demo
 
-A simple Python [Flask](https://flask.palletsprojects.com/en/2.2.x/) application using an [Oracle XE 21c](https://www.oracle.com/database/technologies/xe-downloads.html) database as its backend for data storage. Rather than using the older cx_oracle database driver this application uses the new [Python OracleDB driver](https://oracle.github.io/python-oracledb/). 
+A simple Python [Flask](https://flask.palletsprojects.com/en/2.3.x/) application using an [Oracle Database 23c Free-Developer Release](https://www.oracle.com/database/technologies/xe-downloads.html) database as its backend for data storage. Rather than using the older `cx_oracle` database driver this application uses the new [Python OracleDB driver](https://oracle.github.io/python-oracledb/). 
 
 Both the "frontend" and "backend" run in containers. The application is deliberately kept simple, and implemented in a similar fashion as existing tutorials about software development using containers: all it does is count page views per visitor using cookies to identify individual sessions.
 
-> This is not production-ready code, it merely serves as an example how to develop with Oracle database and Python(-oracledb). In particular no attention was spent on security to keep the example simple. 
+> **Warning:** This is not production-ready code, it merely serves as an example how to develop with Oracle database and Python(-oracledb). In particular no attention was spent on security to keep the example simple. 
 
 # Building
 
-The Oracle XE 21c database [container image](https://github.com/gvenzl/oci-oracle-xe) is provided by Gerald Venzl. No further modifications are required.
+The Oracle Database 23c Free-Developer Release database [container image](https://hub.docker.com/r/gvenzl/oracle-free) is provided by Gerald Venzl. No further modifications are required.
 
-Building the Application is also quite simple, just run `podman build -t pydemo:1.0 .` to build the application locally.
+Building the Application is also quite simple, just run `podman build -t pydemo:1.1 .` to build the application locally.
 
 # Testing
 
-Podman has been used for creating and testing the container images. Docker should work as well but might require adjustments to the code. 
+Podman has been used for creating and testing the container images. Docker should work as well but might require adjustments to the code and secret management.
 
 ## Secrets, Networks, and Volumes
 
@@ -28,28 +28,27 @@ The following entities must be in place before the application can be tested:
 - Network
     * `oracle-net` is used to link the database container to the application container. Must have DNS enabled (`podman network inspect oracle-net | jq '.[0].dns_enabled'` must return `true`)
 
-The XE database container image can be instructed to create an `APP_USER`. For simplicity this `APP_USER` account will be used by the Flask application. Update the `podman run` command below to change the username from `flaskdemo` to something of your liking. The user's password is be stored as the aforementioned `flask-user-password` secret.
+The database container image can be instructed to create an `APP_USER`. For simplicity this `APP_USER` account will be used by the Flask application. Update the `podman run` command below to change the username from `flaskdemo` to something of your liking. The user's password is be stored as the aforementioned `flask-user-password` secret.
 
 Please refer to [this RedHat article](https://www.redhat.com/sysadmin/new-podman-secrets-command) for more details about Podman Secrets and how to create them. Before continuing, please ensure the entities listed above have been created. 
 
 ## Database 
 
-Note that the Oracle XE 21c container in the following code-snippet is started _rootless_. Adjust the example as appropriate for your environment
+Note that Oracle Database 23c Free-Developer Release is started _rootless_ in the following code-snippet. Adjust the example as appropriate for your environment:
 
-```
+```shell
 podman run --detach \
---secret oracle-system-password \
---env ORACLE_PASSWORD_FILE=/run/secrets/oracle-system-password \
---env APP_USER=flaskdemo \
---secret flask-user-password,type=env,target=APP_USER_PASSWORD \
---volume oradata-vol:/opt/oracle/oradata \
---name oraclexe \
---net oracle-net \
+--name some-oracle \
 --publish 1521:1521 \
-docker.io/gvenzl/oracle-xe:21-slim
+--volume oradata-vol:/opt/oracle/oradata \
+--secret oracle-system-password,type=env,target=ORACLE_PASSWORD \
+--secret flask-user-password,type=env,target=APP_USER_PASSWORD \
+--env APP_USER=flaskdemo \
+--net oracle-net \
+docker.io/gvenzl/oracle-free:23.2-slim
 ```
 
-After a minute or so you have a working Oracle XE 21c database. Use `podman logs -f oraclexe` to access the container logs, CTRL-C gets you out of there.
+After a minute or so you have a working Oracle Database 23c Free-Developer Release system running in the container. Use `podman logs -f some-oracle` to access the container logs, CTRL-C gets you out of there.
 
 Use `podman ps` or `podman container ls` to check the database is up and running with port 1521 exposed.
 
@@ -58,20 +57,20 @@ Use `podman ps` or `podman container ls` to check the database is up and running
 With the database up and running you can start the Flask application next. If not yet built, create the container image
 
 ```bash
-podman build -t pydemo:1.0 .
+podman build -t pydemo:1.1 .
 ```
 
 Now that the container has been built it can be started. Just like the database container it's started _rootless_
 
 ```bash
 podman run --detach \
---name pydemo \
+--name some-pythondemo \
 --net oracle-net \
 --env PYTHON_USERNAME=flaskdemo \
 --secret flask-user-password,type=env,target=PYTHON_PASSWORD \
---env PYTHON_CONNECTSTRING="oraclexe/xepdb1" \
+--env PYTHON_CONNECTSTRING="some-oracle/freepdb1" \
 --publish 8080:8080 \
-localhost/pydemo:1.0
+localhost/pydemo:1.1
 ```
 
 Once the application start completed, point your browser to [http://localhost:8080](http://localhost:8080). [Waitress](https://flask.palletsprojects.com/en/2.2.x/deploying/waitress/) serves the application from the container image.
