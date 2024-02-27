@@ -1,6 +1,6 @@
-# Flask, Python-OracleDB, and Oracle Database 23c Free-Developer Release Web Application Demo
+# A Web Application Demo using containerised databases
 
-A simple Python [Flask](https://flask.palletsprojects.com/en/2.3.x/) application using an [Oracle Database 23c Free-Developer Release](https://blogs.oracle.com/developers/post/oracle-database-23c-free-developer-release) database as its backend for data storage. Rather than using the older `cx_oracle` database driver this application uses the new [Python OracleDB driver](https://oracle.github.io/python-oracledb/). 
+A simple Python [Flask](https://palletsprojects.com/p/flask/) application using an [Oracle Database 23c Free](https://www.oracle.com/database/free/) database as its backend for data storage. Rather than using the older `cx_oracle` database driver this application uses the new [Python OracleDB driver](https://oracle.github.io/python-oracledb/). 
 
 Both the "frontend" and "backend" run in containers. The application is deliberately kept simple, and implemented in a similar fashion as existing tutorials about software development using containers: all it does is count page views per visitor using cookies to identify individual sessions.
 
@@ -8,13 +8,13 @@ Both the "frontend" and "backend" run in containers. The application is delibera
 
 # Building
 
-The Oracle Database 23c Free-Developer Release database [container image](https://hub.docker.com/r/gvenzl/oracle-free) is provided by Gerald Venzl. No further modifications are required.
+The Oracle Database 23c Free Release database [container image](https://hub.docker.com/r/gvenzl/oracle-free) is provided by Gerald Venzl. No further modifications are required.
 
-Building the Application is also quite simple, just run `podman build -t pydemo:1.1 .` to build the application locally.
+Building the Application is also quite simple, just run `podman build -t pydemo:1.0 .` to build the application locally.
 
 # Testing
 
-Podman has been used for creating and testing the container images. Docker should work as well but might require adjustments to the code and secret management.
+Podman has been used for creating and testing the application container image. Docker should work as well but might require adjustments to the code and secret management.
 
 ## Secrets, Networks, and Volumes
 
@@ -34,7 +34,7 @@ Please refer to [this RedHat article](https://www.redhat.com/sysadmin/new-podman
 
 ## Database 
 
-Note that Oracle Database 23c Free-Developer Release is started _rootless_ in the following code-snippet. Adjust the example as appropriate for your environment:
+Note that Oracle Database 23c Free is started _rootless_ in the following code-snippet. Adjust the example as appropriate for your environment:
 
 ```shell
 podman run --detach \
@@ -45,10 +45,10 @@ podman run --detach \
 --secret flask-user-password,type=env,target=APP_USER_PASSWORD \
 --env APP_USER=flaskdemo \
 --net oracle-net \
-docker.io/gvenzl/oracle-free:23.2-slim
+docker.io/gvenzl/oracle-free:latest
 ```
 
-After a minute or so you have a working Oracle Database 23c Free-Developer Release system running in the container. Use `podman logs -f some-oracle` to access the container logs, CTRL-C gets you out of there.
+After a minute or so you have a working Oracle Database 23c Free system running in the container. Use `podman logs -f some-oracle` to access the container logs, CTRL-C gets you out of there.
 
 Use `podman ps` or `podman container ls` to check the database is up and running with port 1521 exposed.
 
@@ -57,7 +57,7 @@ Use `podman ps` or `podman container ls` to check the database is up and running
 With the database up and running you can start the Flask application next. If not yet built, create the container image
 
 ```bash
-podman build -t pydemo:1.1 .
+podman build -t pydemo:1.0 .
 ```
 
 Now that the container has been built it can be started. Just like the database container it's started _rootless_
@@ -70,11 +70,11 @@ podman run --detach \
 --secret flask-user-password,type=env,target=PYTHON_PASSWORD \
 --env PYTHON_CONNECTSTRING="some-oracle/freepdb1" \
 --publish 8080:8080 \
-localhost/pydemo:1.1
+localhost/pydemo:1.0
 ```
 
-Once the application start completed, point your browser to [http://localhost:8080](http://localhost:8080). [Waitress](https://flask.palletsprojects.com/en/2.2.x/deploying/waitress/) serves the application from the container image.
+Once the application start completed, point your browser to [http://localhost:8080](http://localhost:8080). [Waitress](https://flask.palletsprojects.com/en/3.0.x/deploying/waitress/) serves the application from the container image.
 
-# Additional Steps
+# Next Steps
 
 As per the introduction the application has been kept simple to focus on the main topic: creating and running a web application in containers, connecting to an Oracle instance. Improvements to this code should include introduction of TLS security and automated build of the (application) container image.
