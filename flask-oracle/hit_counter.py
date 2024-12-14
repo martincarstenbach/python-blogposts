@@ -12,7 +12,7 @@ Before running, set these environment variables to connect to the database:
 
     PYTHON_USERNAME       - your DB username
     PYTHON_PASSWORD       - your DB password
-    PYTHON_CONNECTSTRING  - the connection string to the DB, e.g. "example.com/XEPDB1"
+    PYTHON_CONNECTSTRING  - the connection string to the database, e.g. "localhost/freepdb1"
 
 This code serves as an example for establishing DevOps practices. It is deliberately written poorly
 and should not be considered an example other than for the improvements that are going to be applied
