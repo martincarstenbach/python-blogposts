@@ -1,16 +1,17 @@
-FROM container-registry.oracle.com/os/oraclelinux:9-slim
+# based on https://yum.oracle.com/oracle-linux-python.html#InstallOnOl9
+
+FROM ghcr.io/oracle/oraclelinux:9 as python312
+
+RUN dnf -y install python3.12 python3.12-libs python3.12-pip python3.12-setuptools python3.12-wheel && \
+    rm -rf /var/cache/dnf
+
+FROM python312 as runtime
 
 WORKDIR /code
 
-RUN microdnf install python3.11 python3.11-pip python3.11-setuptools python3.11-wheel && \
-    rm -rf /var/cache/dnf && \
-    useradd -ms /bin/bash waitress && chown -R waitress /code
-
-USER waitress
-
 COPY requirements.txt requirements.txt
 COPY . .
-RUN pip-3.11 install -r requirements.txt --no-cache-dir
+RUN pip3.12 install -r requirements.txt --no-cache-dir
 
 EXPOSE 8080
-CMD ["/home/waitress/.local/bin/waitress-serve", "hitCounter:app"]
+CMD ["waitress-serve", "hit_counter:app"]
