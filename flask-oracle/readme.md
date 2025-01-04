@@ -8,7 +8,7 @@ Both the "frontend" and "backend" run in containers. The application is delibera
 
 ## Building
 
-The Oracle Database 23ai Free Release database [container image](https://hub.docker.com/r/gvenzl/oracle-free) used in this application is provided by Gerald Venzl. No further modifications are required. You can always use the official image, available from [Oracle's container registry](https://container-registry.oracle.com/ords/ocr/ba/database/free).
+The Oracle Database 23ai Free Release database [container image](https://hub.docker.com/r/gvenzl/oracle-free) used in this application is provided by Gerald Venzl. No further modifications are required. You can always use the official image, available from [Oracle's container registry](https://container-registry.oracle.com/ords/ocr/ba/database/free) instead, but need to make sure the demo user is created.
 
 Building the Application is also quite simple, just run `podman build -t pydemo:1.0 .` to build the application locally. Simply use the commands shown below.
 
@@ -26,7 +26,7 @@ The following entities must be in place before the application can be tested:
 - Volume
   - `oradata-vol` must be created to persistently store the database on disk
 - Network
-  -`oracle-net` is used to link the database container to the application container. Must have DNS enabled (`podman network inspect oracle-net | jq '.[0].dns_enabled'` must return `true`)
+  - `oracle-net` is used to link the database container to the application container. Must have DNS enabled (`podman network inspect oracle-net | jq '.[0].dns_enabled'` must return `true`)
 
 Gerald Venzl's database container image can be instructed to create an `APP_USER`. For simplicity this `APP_USER` account will be used by the Flask application. Update the `podman run` command below to change the username from `flaskdemo` to something of your liking. The user's password is be stored as the aforementioned `flask-user-password` secret.
 
@@ -54,10 +54,10 @@ Use `podman ps` or `podman container ls` to check the database is up and running
 
 ### Application
 
-Once the database is up and running you can test the Flask application next. The following command is for local testing/development only, the container image will use [Waitress](https://flask.palletsprojects.com/en/stable/deploying/waitress/) to serve the application.
+Once the database is up and running you can test the Flask application next. The following command is for local testing/development only, the container image will use [Waitress](https://flask.palletsprojects.com/en/stable/deploying/waitress/) to serve the application. Note that you have to provide values for `PYTHON_USERNAME`, `PYTHON_PASSWORD` and `PYTHON_CONNECTSTRING` before you can start the application. If you are using `zsh` you can prevent the password from making it into the history by using `HIST_IGNORE_SPACE`, `bash` has `HISTCONTROL` etc. 
 
 ```sh
-flask  --app hit_counter run --debug
+flask --app hit_counter run --debug
 ```
 
 With that test successfully completed you can build the container image:
