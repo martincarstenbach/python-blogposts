@@ -43,25 +43,52 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+  
+  <!-- if a URL is provided as a parameter, use validator to check if it is valid -->
+  <script src=" https://cdn.jsdelivr.net/npm/validator@13.12.0/validator.min.js "></script>
 
   <!-- 
       Generate the QR code for the audience to use. Call the page and append the url like so 
       http://127.0.0.1:5000/?url=https://www.google.de
+
+      Uses validator.js to enforce correctness.
     -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js "></script>
   <script type="text/javascript">
 
     // read and parse the GET parameters to generate the QR code
     const params = new URLSearchParams(document.location.search);
-    let uri = params.get("url");
-    if (uri === null) {
-      uri = "https://martincarstenbach.com";
+    let url = params.get("url");
+    if (url === null) {
+      url = "https://martincarstenbach.com";
     }
 
-    console.log(`uri points to ${uri}`)
+    if (! validator.isURL(
+      url, { 
+        protocols: ['https'], 
+        require_tld: true, 
+        require_protocol: true,
+        require_host: true,
+        require_port: false,
+        require_valid_protocol: true,
+        allow_underscores: false,
+        host_whitelist: false, 
+        host_blacklist: false, 
+        allow_trailing_dot: false, 
+        allow_protocol_relative_urls: false, 
+        allow_fragments: false, 
+        allow_query_components: true,
+        disallow_auth: false, 
+        validate_length: true }
+    )) {
+      console.error(`provided URL "${url}" failed verification`)
+      url = "https://martincarstenbach.com";
+    }
+
+    console.log(`QR code will point to ${url}`);
 
     new QRCode(document.getElementById("qrcode"), {
-      text: uri,
+      text: url,
       width: 144,
       height: 144
     });
