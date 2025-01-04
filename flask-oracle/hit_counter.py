@@ -1,14 +1,15 @@
 """
 hit_counter.py
 
-Martin Bach, 14 Dec 2024
+Martin Bach, 04 Jan 2025
 
 Based on code by Christopher Jones, 10 Sep 2020
 Original source: https://blogs.oracle.com/opal/post/how-to-use-python-flask-with-oracle-database
 
 Demo: using Flask with Oracle Database Free 23ai
 
-Before running, set these environment variables to connect to the database:
+Before running, set these environment variables to connect to the database or provide them
+to your container runtime as environment variables:
 
     PYTHON_USERNAME       - your DB username
     PYTHON_PASSWORD       - your DB password
@@ -190,7 +191,7 @@ def index():
 
     # and send a response to the browser
     response = make_response(render_template('index.html', hits=hits))
-    response.set_cookie("uuid", my_uuid)
+    response.set_cookie("uuid", my_uuid, samesite="Strict")
     return response
 
 @app.route("/status")
